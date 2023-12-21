@@ -13,8 +13,15 @@ class Controller : public QObject
     Q_PROPERTY(int columns READ columns CONSTANT)
 
 public:
+    Controller();
+    ~Controller();
+
     int rows() const;
     int columns() const;
+
+private:
+    struct Pimpl;
+    std::unique_ptr<Pimpl> m_p;
 };
 
 } // namespace core
