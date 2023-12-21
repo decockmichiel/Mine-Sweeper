@@ -22,12 +22,12 @@ ApplicationWindow {
         columnSpacing: 0
         rowSpacing: 0
 
-        rows: 20
-        columns: 20
+        rows: controller.rows
+        columns: controller.columns
 
         Repeater {
 
-            model : 400
+            model: parent.rows * parent.columns
 
             Rectangle {
                 width: 25
