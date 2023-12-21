@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+import CORE
+
 ApplicationWindow {
     id: root
 
@@ -11,6 +13,8 @@ ApplicationWindow {
 
     width: 1080
     height: 720
+
+    Controller { id: controller }
 
     GridLayout {
         anchors.centerIn: parent

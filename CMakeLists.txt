@@ -20,11 +20,18 @@ qt_add_executable(MineSweeper
     ${QT_RESOURCES}
 )
 
-# add_subdirectory(src)
+qt_add_qml_module(MineSweeper
+    URI CORE
+    VERSION 1.0
+    SOURCES
+        src/core/include/controller.h
+)
+
+add_subdirectory(src)
 # add_subdirectory(tests)
 
 target_link_libraries(MineSweeper PRIVATE
-    # core
+    core
     Qt6::Qml
     Qt6::Quick
     Qt6::Widgets

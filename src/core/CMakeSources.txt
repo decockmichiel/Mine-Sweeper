@@ -1,0 +1,7 @@
+set(CORE_HEADERS
+    include/controller.h
+)
+
+set(CORE_SOURCES
+    controller.cpp
+)
