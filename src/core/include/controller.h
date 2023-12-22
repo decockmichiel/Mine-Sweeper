@@ -8,6 +8,16 @@
 namespace core
 {
 
+struct Position
+{
+    Position(int row, int column);
+
+    int row = 0;
+    int column = 0;
+};
+
+bool operator==(const Position& left, const Position& right);
+
 class Controller : public QObject
 {
     Q_OBJECT
@@ -26,11 +36,15 @@ public:
 
     QAbstractListModel* tileModel() const;
 
-    int getRow(int cellNumber) const;
-    int getColumn(int cellNumber) const;
+    std::vector<Position> bombs() const;
+
+    int getRow(int tileNumber) const;
+    int getColumn(int tileNumber) const;
+
+    int getTileNumber(int row, int column) const;
 
 public slots:
-    void onCellClicked(int cellNumber);
+    void onTileClicked(int tileNumber);
 
 private:
     struct Pimpl;

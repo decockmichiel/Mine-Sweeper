@@ -3,30 +3,19 @@
 #include "include/controller.h"
 #include "include/tile_model.h"
 
-namespace
+namespace core
 {
 
-struct Position
+Position::Position(int row, int column)
+    : row(row)
+    , column(column)
 {
-    Position(size_t row, size_t column)
-        : row(row)
-        , column(column)
-    {
-    }
-
-    size_t row = 0;
-    size_t column = 0;
-};
+}
 
 bool operator==(const Position& left, const Position& right)
 {
     return left.row == right.row && left.column == right.column;
 }
-
-} // namespace
-
-namespace core
-{
 
 struct Controller::Pimpl
 {
@@ -44,6 +33,8 @@ struct Controller::Pimpl
 Controller::Controller()
     : m_p(std::make_unique<Pimpl>(this))
 {
+    m_p->disperseBombs(10);
+    m_p->m_tileModel->updateAdjacentBombs();
 }
 
 Controller::~Controller() = default;
@@ -58,14 +49,19 @@ int Controller::columns() const
     return 20;
 }
 
-int Controller::getRow(int cellNumber) const
+int Controller::getRow(int tileNumber) const
 {
-    return std::floor(cellNumber / columns());
+    return std::floor(tileNumber / columns());
 }
 
-int Controller::getColumn(int cellNumber) const
+int Controller::getColumn(int tileNumber) const
 {
-    return cellNumber % columns();
+    return tileNumber % columns();
+}
+
+int Controller::getTileNumber(int row, int column) const
+{
+    return row * columns() + column;
 }
 
 QAbstractListModel* Controller::tileModel() const
@@ -73,12 +69,17 @@ QAbstractListModel* Controller::tileModel() const
     return m_p->m_tileModel.get();
 }
 
-void Controller::onCellClicked(int cellNumber)
+std::vector<Position> Controller::bombs() const
+{
+    return m_p->m_bombs;
+}
+
+void Controller::onTileClicked(int tileNumber)
 {
     TileModel& tileModel = *m_p->m_tileModel;
 
-    const Position    pos(getRow(cellNumber), getColumn(cellNumber));
-    const QModelIndex index(m_p->m_tileModel->index(cellNumber, 0));
+    const Position    pos(getRow(tileNumber), getColumn(tileNumber));
+    const QModelIndex index(m_p->m_tileModel->index(tileNumber, 0));
 
     if (m_p->isBomb(pos))
         tileModel.setState(index, State::State::failure);
@@ -90,7 +91,6 @@ Controller::Pimpl::Pimpl(Controller* parent)
     : m_controller(parent)
     , m_tileModel(std::make_unique<TileModel>(parent))
 {
-    disperseBombs(10);
 }
 
 void Controller::Pimpl::disperseBombs(size_t numberOfBombs)

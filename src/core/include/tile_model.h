@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <vector>
 
 #include <QAbstractListModel>
@@ -25,10 +26,17 @@ namespace core
 
 class Controller;
 
+struct TileData
+{
+    State::State state = State::State::unclicked;
+    size_t       adjacentBombs = 0;
+};
+
 class TileModel : public QAbstractListModel
 {
 public:
     TileModel(Controller* controller);
+    ~TileModel();
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 
@@ -38,14 +46,16 @@ public:
 
     void setState(const QModelIndex& index, State::State state);
 
+    void updateAdjacentBombs();
+
     enum Roles
     {
         state = Qt::UserRole
     };
 
 private:
-    std::vector<State::State> m_data;
-    Controller*               m_controller = nullptr;
+    struct Pimpl;
+    std::unique_ptr<Pimpl> m_p;
 };
 
 } // namespace core

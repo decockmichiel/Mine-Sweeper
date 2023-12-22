@@ -42,11 +42,20 @@ ApplicationWindow {
                 }
                 border.color: "#888888"
 
+                Label {
+                    anchors.centerIn: parent
+                    width: 15
+                    height: 15
+                    text: model.state === 1 ? display : ""
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
                 MouseArea {
                     anchors.fill: parent
 
                     onClicked: {
-                        controller.onCellClicked(index);
+                        controller.onTileClicked(index);
                     }
                 }
             }
