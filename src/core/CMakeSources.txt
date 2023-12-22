@@ -1,7 +1,9 @@
 set(CORE_HEADERS
     include/controller.h
+    include/tile_model.h
 )
 
 set(CORE_SOURCES
     controller.cpp
+    tile_model.cpp
 )

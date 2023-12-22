@@ -26,20 +26,27 @@ ApplicationWindow {
         columns: controller.columns
 
         Repeater {
-
-            model: parent.rows * parent.columns
+            model: controller.tileModel
 
             Rectangle {
                 width: 25
                 height: 25
-                color: "#333333"
+                color: {
+                    switch(model.state){
+                        default:
+                        case 0: return "#333333";
+                        case 1: return "green"
+                        case 2: return "red"
+                        case 3: return "orange"
+                    }
+                }
                 border.color: "#888888"
 
                 MouseArea {
                     anchors.fill: parent
 
                     onClicked: {
-                        parent.color = "green"
+                        controller.onCellClicked(index);
                     }
                 }
             }
