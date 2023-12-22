@@ -47,6 +47,7 @@ public:
 
 public slots:
     void onTileClicked(int tileNumber);
+    void onTileRightClicked(int tileNumber);
 
 private:
     struct Pimpl;

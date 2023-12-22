@@ -54,8 +54,13 @@ ApplicationWindow {
                 MouseArea {
                     anchors.fill: parent
 
-                    onClicked: {
-                        controller.onTileClicked(index);
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+                    onClicked: (mouse) => {
+                        if (mouse.button == Qt.RightButton)
+                            controller.onTileRightClicked(index);
+                        else
+                            controller.onTileClicked(index);
                     }
                 }
             }

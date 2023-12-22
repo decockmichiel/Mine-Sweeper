@@ -116,6 +116,9 @@ void Controller::onTileClicked(int tileNumber)
         loopOverNeighbours(pos, revealNeighboursEmptyTile);
     };
 
+    if (tileModel.getState(index) != State::State::unclicked)
+        return;
+
     if (m_p->isBomb(pos))
     {
         tileModel.setState(index, State::State::failure);
@@ -123,6 +126,28 @@ void Controller::onTileClicked(int tileNumber)
     }
 
     revealNeighboursEmptyTile(pos);
+}
+
+void Controller::onTileRightClicked(int tileNumber)
+{
+    using State = State::State;
+
+    TileModel& tileModel = *m_p->m_tileModel;
+
+    const QModelIndex index(tileModel.index(tileNumber, 0));
+
+    switch (tileModel.getState(index))
+    {
+    case State::failure:
+    case State::success:
+        break;
+    case State::unclicked:
+        tileModel.setState(index, State::potential);
+        break;
+    case State::potential:
+        tileModel.setState(index, State::unclicked);
+        break;
+    }
 }
 
 Controller::Pimpl::Pimpl(Controller* parent)
