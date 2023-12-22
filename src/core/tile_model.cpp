@@ -49,6 +49,11 @@ QHash<int, QByteArray> TileModel::roleNames() const
     return roles;
 }
 
+State::State TileModel::getState(const QModelIndex& index) const
+{
+    return static_cast<State::State>(data(index, Roles::state).toInt());
+}
+
 void TileModel::setState(const QModelIndex& index, State::State state)
 {
     auto& curState = m_p->m_data[index.row()].state;
@@ -63,20 +68,13 @@ void TileModel::updateAdjacentBombs()
 {
     for (const auto& bomb : m_p->m_controller->bombs())
     {
-        for (size_t row = std::max(0, bomb.row - 1);
-             row != std::min(m_p->m_controller->rows(), bomb.row + 2);
-             ++row)
-        {
-            for (size_t col = std::max(0, bomb.column - 1);
-                 col != std::min(m_p->m_controller->columns(), bomb.column + 2);
-                 ++col)
+        m_p->m_controller->loopOverNeighbours(
+            bomb,
+            [this](const Position& neighbour)
             {
-                if (Position(row, col) == bomb)
-                    continue;
-
-                m_p->m_data[m_p->m_controller->getTileNumber(row, col)].adjacentBombs++;
-            }
-        }
+                m_p->m_data[m_p->m_controller->getTileNumber(neighbour.row, neighbour.column)]
+                    .adjacentBombs++;
+            });
     }
 }
 

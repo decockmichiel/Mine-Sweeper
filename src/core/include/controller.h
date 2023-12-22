@@ -43,6 +43,8 @@ public:
 
     int getTileNumber(int row, int column) const;
 
+    void loopOverNeighbours(const Position& pos, std::function<void(const Position&)> f);
+
 public slots:
     void onTileClicked(int tileNumber);
 

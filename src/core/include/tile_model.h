@@ -44,6 +44,7 @@ public:
 
     QHash<int, QByteArray> roleNames() const override;
 
+    State::State getState(const QModelIndex& index) const;
     void setState(const QModelIndex& index, State::State state);
 
     void updateAdjacentBombs();

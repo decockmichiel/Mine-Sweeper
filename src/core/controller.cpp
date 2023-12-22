@@ -33,7 +33,7 @@ struct Controller::Pimpl
 Controller::Controller()
     : m_p(std::make_unique<Pimpl>(this))
 {
-    m_p->disperseBombs(10);
+    m_p->disperseBombs(40);
     m_p->m_tileModel->updateAdjacentBombs();
 }
 
@@ -64,6 +64,25 @@ int Controller::getTileNumber(int row, int column) const
     return row * columns() + column;
 }
 
+void Controller::loopOverNeighbours(const Position& pos, std::function<void(const Position&)> f)
+{
+    for (size_t row = std::max(0, pos.row - 1);
+         row != std::min(m_p->m_controller->rows(), pos.row + 2);
+         ++row)
+    {
+        for (size_t col = std::max(0, pos.column - 1);
+             col != std::min(m_p->m_controller->columns(), pos.column + 2);
+             ++col)
+        {
+            const Position neighbour(row, col);
+            if (pos == neighbour)
+                continue;
+
+            f(neighbour);
+        }
+    }
+}
+
 QAbstractListModel* Controller::tileModel() const
 {
     return m_p->m_tileModel.get();
@@ -79,12 +98,31 @@ void Controller::onTileClicked(int tileNumber)
     TileModel& tileModel = *m_p->m_tileModel;
 
     const Position    pos(getRow(tileNumber), getColumn(tileNumber));
-    const QModelIndex index(m_p->m_tileModel->index(tileNumber, 0));
+    const QModelIndex index(tileModel.index(tileNumber, 0));
+
+    std::function<void(const Position&)> revealNeighboursEmptyTile =
+        [this, &tileModel, &revealNeighboursEmptyTile](const Position& pos)
+    {
+        const QModelIndex index(tileModel.index(getTileNumber(pos.row, pos.column), 0));
+
+        if (tileModel.getState(index) != State::State::unclicked)
+            return;
+
+        tileModel.setState(index, State::State::success);
+
+        if (tileModel.data(index) != 0)
+            return;
+
+        loopOverNeighbours(pos, revealNeighboursEmptyTile);
+    };
 
     if (m_p->isBomb(pos))
+    {
         tileModel.setState(index, State::State::failure);
-    else
-        tileModel.setState(index, State::State::success);
+        return;
+    }
+
+    revealNeighboursEmptyTile(pos);
 }
 
 Controller::Pimpl::Pimpl(Controller* parent)
